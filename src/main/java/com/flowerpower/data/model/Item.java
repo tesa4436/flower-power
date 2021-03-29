@@ -1,19 +1,25 @@
 package com.flowerpower.data.model;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Date;
 
-@Data
-@RequiredArgsConstructor
 @Entity
+@Table(name = "item")
+@Builder
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Item implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

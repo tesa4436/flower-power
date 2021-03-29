@@ -1,7 +1,9 @@
 package com.flowerpower.data.model;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,10 +15,12 @@ import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Date;
 
-@Data
-@RequiredArgsConstructor
 @Entity
 @Table(name = "flower_order")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
 public class Order implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -28,6 +32,8 @@ public class Order implements Serializable {
     private OrderStatus status;
     private String paymentMethod;
     private Date creationDate;
+    private String shippingAddress;
+    private String greetingMessage;
 
     @PrePersist
     void setCreationDate() {

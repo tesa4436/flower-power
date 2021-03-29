@@ -2,6 +2,8 @@ package com.flowerpower.controllers;
 
 import com.flowerpower.data.model.Order;
 import com.flowerpower.data.repository.OrderRepository;
+import com.flowerpower.order.OrderProcessor;
+import com.flowerpower.order.OutOfStockException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,10 +17,12 @@ import java.util.Optional;
 public class OrdersController {
 
     private OrderRepository orderRepository;
+    private OrderProcessor orderProcessor;
 
     @Autowired
-    public OrdersController(OrderRepository orderRepository) {
+    public OrdersController(OrderRepository orderRepository, OrderProcessor orderProcessor) {
         this.orderRepository = orderRepository;
+        this.orderProcessor = orderProcessor;
     }
 
     @RequestMapping(value = "/orders", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -36,5 +40,18 @@ public class OrdersController {
         }
 
         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+    }
+
+    @RequestMapping(value = "/order", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> placeOrder(@RequestBody Order order) {
+        try {
+            orderProcessor.placeOrder(order);
+
+            return new ResponseEntity<>(null, HttpStatus.CREATED);
+        } catch (OutOfStockException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 }
