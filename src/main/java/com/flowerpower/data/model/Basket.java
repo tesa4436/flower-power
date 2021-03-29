@@ -1,24 +1,30 @@
 package com.flowerpower.data.model;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.List;
 
-@Data
-@RequiredArgsConstructor
 @Entity
+@Table(name = "basket")
+@Builder
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Basket implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long basketId;
 
-    @OneToMany(targetEntity = OrderedItem.class)
-    List<OrderedItem> items;
+    @ManyToMany(targetEntity = Item.class)
+    List<Item> items;
 }

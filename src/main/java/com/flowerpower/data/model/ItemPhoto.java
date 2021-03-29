@@ -9,30 +9,18 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.PrePersist;
 import javax.persistence.Table;
-import java.io.Serializable;
-import java.util.Date;
 
 @Entity
-@Table(name = "item")
+@Table(name = "item_photo")
 @Builder
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Item implements Serializable {
+public class ItemPhoto {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private ItemType itemType;
-    private Long amount;
-    private Long photoId;
-    private Date creationDate;
-    private String description;
-
-    @PrePersist
-    void setCreationDate() {
-        this.creationDate = new Date();
-    }
+    private byte[] photo;
 }
