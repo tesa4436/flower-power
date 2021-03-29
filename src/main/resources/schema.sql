@@ -16,12 +16,14 @@ create table flower_order (
     primary key (order_id)
 );
 create table item (
+    name varchar(255),
     id bigint not null,
     amount bigint,
     creation_date timestamp,
     description varchar(255),
     item_type integer,
     photo_id bigint,
+    price decimal(19,2),
     primary key (id)
 );
 create table item_photo (
