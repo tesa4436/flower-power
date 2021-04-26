@@ -45,13 +45,27 @@ public class OrdersController {
     @RequestMapping(value = "/order", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> placeOrder(@RequestBody Order order) {
         try {
-            orderProcessor.placeOrder(order);
-
+            orderProcessor.place(order);
             return new ResponseEntity<>(null, HttpStatus.CREATED);
+
         } catch (OutOfStockException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @RequestMapping(value = "/order", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> updateOrder(@RequestBody Order order) {
+        try {
+            orderProcessor.update(order);
+            return new ResponseEntity<>(null, HttpStatus.CREATED);
+
+        } catch (OutOfStockException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

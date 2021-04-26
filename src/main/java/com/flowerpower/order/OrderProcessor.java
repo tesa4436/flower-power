@@ -3,6 +3,7 @@ package com.flowerpower.order;
 import com.flowerpower.data.model.Item;
 import com.flowerpower.data.model.Order;
 import com.flowerpower.data.repository.ItemRepository;
+import com.flowerpower.data.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,17 +13,39 @@ import java.util.Optional;
 public class OrderProcessor {
 
     private ItemRepository itemRepository;
+    private OrderRepository orderRepository;
 
     @Autowired
-    public OrderProcessor(ItemRepository itemRepository) {
+    public OrderProcessor(ItemRepository itemRepository, OrderRepository orderRepository) {
         this.itemRepository = itemRepository;
+        this.orderRepository = orderRepository;
     }
 
-    public void placeOrder(Order order) throws OutOfStockException {
-        validateOrder(order);
+    public void place(Order order) throws OutOfStockException {
+        validate(order);
+        orderRepository.save(order);
     }
 
-    private void validateOrder(Order order) throws OutOfStockException {
+    public void update(Order order) throws OutOfStockException {
+
+        validate(order);
+
+        Optional<Order> oldOrderOptional = orderRepository.findById(order.getOrderId());
+        Order oldOrder;
+
+        if (!oldOrderOptional.isPresent()) {
+            throw new IllegalArgumentException("The order requested to be updated does not exist");
+        }
+
+        oldOrder = oldOrderOptional.get();
+        oldOrder.setGreetingMessage(order.getGreetingMessage());
+        oldOrder.setShippingAddress(order.getShippingAddress());
+        oldOrder.setBasket(order.getBasket());
+
+        orderRepository.save(oldOrder);
+    }
+
+    private void validate(Order order) throws OutOfStockException {
         if (order == null) {
             throw new IllegalArgumentException("No order present");
         }
