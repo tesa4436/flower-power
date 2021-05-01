@@ -2,6 +2,7 @@ package com.flowerpower.controllers;
 
 import com.flowerpower.data.RegistrationForm;
 import com.flowerpower.data.repository.UserRepository;
+import com.google.common.base.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,7 +38,7 @@ public class UsersController {
     public ResponseEntity<String> registerNewUser(@RequestBody RegistrationForm form) {
 
         if (form.getUsername() == null || userRepository.findByUsername(form.getUsername()).isPresent()) {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(HttpStatus.FORBIDDEN);
         }
 
         try {
@@ -51,19 +52,19 @@ public class UsersController {
     }
 
     private void validate(RegistrationForm form) {
-        if (form.getPassword() == null || form.getPassword().equals("")) {
+        if (Strings.isNullOrEmpty(form.getPassword())) {
             throw new IllegalArgumentException("No password specified");
         }
 
-        if (form.getAddress() == null || form.getAddress().equals("")) {
+        if (Strings.isNullOrEmpty(form.getAddress())) {
             throw new IllegalArgumentException("No address specified");
         }
 
-        if (form.getFullName() == null || form.getFullName().equals("")) {
+        if (Strings.isNullOrEmpty(form.getFullName())) {
             throw new IllegalArgumentException("No full name specified");
         }
 
-        if (form.getPhoneNumber() == null || form.getPhoneNumber().equals("")) {
+        if (Strings.isNullOrEmpty(form.getPhoneNumber())) {
             throw new IllegalArgumentException("No phone number specified");
         }
     }
