@@ -9,7 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -33,11 +32,6 @@ public class UsersController {
     @RequestMapping(value = "/currentuser", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public String currentUser(Principal principal) {
         return principal != null && principal.getName() != null ? principal.getName() : "anonymous";
-    }
-
-    @RequestMapping(value = "/user/{name}/exists", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean userExists(@PathVariable String name) {
-        return userRepository.findByUsername(name).isPresent();
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)

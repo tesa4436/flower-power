@@ -33,9 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .roles("USER")
                 .and();
 
-        auth.jdbcAuthentication().dataSource(dataSource)
-                .withDefaultSchema()
-                .and();
+        auth.jdbcAuthentication().dataSource(dataSource);
 
         auth.userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder());
