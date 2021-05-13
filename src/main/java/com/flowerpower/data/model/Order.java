@@ -36,6 +36,9 @@ public class Order implements Serializable {
     private Date creationDate;
     private String shippingAddress;
     private String greetingMessage;
+    private String name;
+    private String phone;
+    private String surname;
 
     @PrePersist
     void setCreationDate() {
