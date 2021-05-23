@@ -50,8 +50,9 @@ public class UsersController {
 
         var existingUser = userRepository.findByUsername(user.getUsername());
 
-        return existingUser.isPresent() ? new ResponseEntity<>(true, HttpStatus.OK) :
-                new ResponseEntity<>(false, HttpStatus.OK);
+        return existingUser.isPresent() ?
+                new ResponseEntity<>(existingUser.get().getPassword().equals(encoder.encode(user.getPassword())), HttpStatus.OK) :
+                new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
