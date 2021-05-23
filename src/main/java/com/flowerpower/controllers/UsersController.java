@@ -2,6 +2,7 @@ package com.flowerpower.controllers;
 
 import com.flowerpower.data.RegistrationForm;
 import com.flowerpower.data.repository.UserRepository;
+import com.flowerpower.security.User;
 import com.google.common.base.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,19 @@ public class UsersController {
     @RequestMapping(value = "/user/{name}/exists", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean userExists(@PathVariable String name) {
         return userRepository.findByUsername(name).isPresent();
+    }
+
+    @RequestMapping(value = "/user/exists", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Boolean> userWithPassExists(@RequestBody User user) {
+
+        if (user == null || user.getUsername() == null || user.getPassword() == null) {
+            return new ResponseEntity(null, HttpStatus.BAD_REQUEST);
+        }
+
+        var existingUser = userRepository.findByUsername(user.getUsername());
+
+        return existingUser.isPresent() ? new ResponseEntity<>(true, HttpStatus.OK) :
+                new ResponseEntity<>(false, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
