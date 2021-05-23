@@ -50,7 +50,7 @@ public class OrderProcessor {
             throw new IllegalArgumentException("No order present");
         }
 
-        if (order.getBasket() == null) {
+        if (order.getBasket() == null || order.getBasket().getItems().isEmpty()) {
             throw new IllegalArgumentException("The order has no associated items");
         }
 
