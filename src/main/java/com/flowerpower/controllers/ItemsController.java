@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,28 +27,44 @@ public class ItemsController {
 
     private ItemRepository itemRepository;
     private PhotoRepository photoRepository;
+    private Authentication auth;
 
     @Autowired
     public ItemsController(ItemRepository itemRepository, PhotoRepository photoRepository) {
         this.itemRepository = itemRepository;
         this.photoRepository = photoRepository;
+        this.auth = SecurityContextHolder.getContext().getAuthentication();
     }
 
     @RequestMapping(value = "/items", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public Iterable<Item> getItems() {
-        return itemRepository.findAll();
+
+        Iterable<Item> allItems = itemRepository.findAll();
+
+        if (auth != null && !auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
+            allItems.forEach(item -> item.setAmount(null));
+        }
+
+        return allItems;
     }
 
     @RequestMapping(value = "/item/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Item> getItemById(@PathVariable("id") Long id) {
 
-        Optional<Item> item = itemRepository.findById(id);
+        Optional<Item> itemOpt = itemRepository.findById(id);
 
-        if (item.isPresent()) {
-            return new ResponseEntity<>(item.get(), HttpStatus.OK);
+        if (!itemOpt.isPresent()) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        Item item = itemOpt.get();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth != null && !auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
+            item.setAmount(null);
+        }
+
+        return new ResponseEntity<>(item, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/photo/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
