@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
+import javax.persistence.Version;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -31,6 +32,9 @@ public class Item implements Serializable {
     private Date creationDate;
     private String description;
     private BigDecimal price;
+
+    @Version
+    private long version;
 
     @PrePersist
     void setCreationDate() {

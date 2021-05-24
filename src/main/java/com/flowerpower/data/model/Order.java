@@ -6,7 +6,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.Table;
+import javax.persistence.Version;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -33,6 +41,9 @@ public class Order implements Serializable {
     private String name;
     private String phone;
     private String surname;
+
+    @Version
+    private long version;
 
     @PrePersist
     void setCreationDate() {

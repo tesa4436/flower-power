@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.Version;
 import java.io.Serializable;
 import java.util.List;
 
@@ -29,4 +30,7 @@ public class Basket implements Serializable {
 
     @ManyToMany(targetEntity = Item.class)
     List<Item> items;
+
+    @Version
+    private long version;
 }
