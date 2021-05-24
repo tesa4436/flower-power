@@ -34,6 +34,9 @@ public class Order implements Serializable {
     private String phone;
     private String surname;
 
+    @Version
+    private long version;
+
     @PrePersist
     void setCreationDate() {
         this.creationDate = new Date();

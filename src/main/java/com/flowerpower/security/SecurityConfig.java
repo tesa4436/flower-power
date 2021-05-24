@@ -35,6 +35,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         auth.jdbcAuthentication().dataSource(dataSource)
                 .withDefaultSchema()
+                .withUser("db_admin")
+                .password(passwordEncoder().encode("verysecureadminpassword"))
+                .roles("ADMIN")
+                .and()
+                .withUser("db_testuser")
+                .password(passwordEncoder().encode("verysecureuserpassword"))
+                .roles("USER")
                 .and();
 
         auth.userDetailsService(userDetailsService)
