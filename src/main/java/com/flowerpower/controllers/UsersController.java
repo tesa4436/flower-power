@@ -41,7 +41,7 @@ public class UsersController {
         return userRepository.findByUsername(name).isPresent();
     }
 
-    @RequestMapping(value = "/user/exists", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/user/exists", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Boolean> userWithPassExists(@RequestBody User user) {
 
         if (user == null || user.getUsername() == null || user.getPassword() == null) {
