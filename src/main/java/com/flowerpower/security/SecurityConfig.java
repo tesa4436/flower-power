@@ -23,25 +23,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser("admin")
-                .password(passwordEncoder().encode("verysecureadminpassword"))
-                .roles("ADMIN")
-                .and()
-                .withUser("testuser")
-                .password(passwordEncoder().encode("verysecureuserpassword"))
-                .roles("USER")
-                .and();
 
         auth.jdbcAuthentication().dataSource(dataSource)
                 .withDefaultSchema()
-                .withUser("db_admin")
-                .password(passwordEncoder().encode("verysecureadminpassword"))
-                .roles("ADMIN")
-                .and()
-                .withUser("db_testuser")
-                .password(passwordEncoder().encode("verysecureuserpassword"))
-                .roles("USER")
+                .usersByUsernameQuery("select * from user where username = ?")
+                .authoritiesByUsernameQuery("select username, authority from authorities where username = ?")
                 .and();
 
         auth.userDetailsService(userDetailsService)
@@ -60,7 +46,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/items").permitAll()
             .antMatchers("/item/*").permitAll()
             .antMatchers("/photo/*").permitAll()
-                .antMatchers("/user/exists").permitAll()
+            .antMatchers("/users").permitAll()
+            .antMatchers("/user/exists").permitAll()
             .anyRequest().authenticated()
             .and()
             .httpBasic().and();

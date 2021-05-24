@@ -38,7 +38,12 @@ public class UsersController {
 
     @RequestMapping(value = "/user/{name}/exists", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean userExists(@PathVariable String name) {
-        return userRepository.findByUsername(name).isPresent();
+        return userRepository.findByUsername(name) != null;
+    }
+
+    @RequestMapping(value = "/users", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Iterable<User> getUsers() {
+        return userRepository.findAll();
     }
 
     @RequestMapping(value = "/user/exists", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -50,15 +55,15 @@ public class UsersController {
 
         var existingUser = userRepository.findByUsername(user.getUsername());
 
-        return existingUser.isPresent() ?
-                new ResponseEntity<>(existingUser.get().getPassword().equals(encoder.encode(user.getPassword())), HttpStatus.OK) :
+        return existingUser  != null?
+                new ResponseEntity<>(existingUser.getPassword().equals(encoder.encode(user.getPassword())), HttpStatus.OK) :
                 new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> registerNewUser(@RequestBody RegistrationForm form) {
 
-        if (form.getUsername() == null || userRepository.findByUsername(form.getUsername()).isPresent()) {
+        if (form.getUsername() == null || userRepository.findByUsername(form.getUsername()) != null) {
             return new ResponseEntity(HttpStatus.FORBIDDEN);
         }
 
