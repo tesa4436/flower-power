@@ -3,8 +3,8 @@ delete from basket;
 delete from flower_order;
 delete from basket_items;
 
-insert into item_photo (id, photo)
-values (1, file_read('..\flower-power\src\main\resources\flower_photos\hiacintas.jpg'));
+insert into item_photo (id, photo, version)
+values (1, file_read('..\flower-power\src\main\resources\flower_photos\hiacintas.jpg'), 1);
 
 insert into item (id, amount, item_type, name, price, description, version, photo_id)
 values (1, 1, 0, 'Hiacintas',          3.15,   'Tai yra hiacintas!', 1, 1),
