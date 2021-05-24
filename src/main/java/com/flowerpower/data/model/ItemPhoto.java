@@ -11,7 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
-import javax.persistence.Version;
 
 @Entity
 @Table(name = "item_photo")
@@ -23,9 +22,6 @@ public class ItemPhoto {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
-    @Version
-    private long version;
 
     @Lob
     private byte[] photo;
