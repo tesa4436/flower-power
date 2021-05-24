@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.PostConstruct;
 import java.security.Principal;
 
 @RestController
@@ -29,6 +30,23 @@ public class UsersController {
     public UsersController( UserRepository userRepo, PasswordEncoder encoder) {
         this.userRepository = userRepo;
         this.encoder = encoder;
+    }
+
+    @PostConstruct
+    public void initUserPasswords() {
+        var testuser = userRepository.findByUsername("testuser");
+        var admin = userRepository.findByUsername("admin");
+
+        if (testuser != null) {
+            testuser.setPassword(encoder.encode("verysecureuserpassword"));
+        }
+
+        if (admin != null) {
+            admin.setPassword(encoder.encode("verysecureadminpassword"));
+        }
+
+        userRepository.save(testuser);
+        userRepository.save(admin);
     }
 
     @RequestMapping(value = "/currentuser", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -51,7 +69,7 @@ public class UsersController {
         var existingUser = userRepository.findByUsername(user.getUsername());
 
         return existingUser  != null?
-                new ResponseEntity<>(existingUser.getPassword().equals(encoder.encode(user.getPassword())), HttpStatus.OK) :
+                new ResponseEntity<>((encoder.matches(user.getPassword(), existingUser.getPassword())), HttpStatus.OK) :
                 new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
     }
 

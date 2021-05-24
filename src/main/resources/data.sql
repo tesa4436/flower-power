@@ -33,9 +33,9 @@ create table authority (
     foreign key (username) references user (username)
 );
 
-insert into user (username, password)
-values  ('testuser', '$2y$12$UIVhOxgOZ4n.FfD8NKBPKe0c73qYv6GDtZgQX0QeVc9mb9XoyR8QK'), -- verysecureuserpassword
-        ('admin', '$2y$12$QQ717YtO7vFmKb/lTFJWL.xvv5Tas9eBannPq6zm.au5XZocXvmH.'); --verysecureadminpassword
+insert into user (username)
+values  ('testuser'), -- verysecureuserpassword
+        ('admin'); --verysecureadminpassword
 
 insert into authority (username, authority)
 values  ('testuser', 'ROLE_USER'),
