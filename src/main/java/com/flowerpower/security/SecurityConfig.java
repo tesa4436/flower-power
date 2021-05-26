@@ -27,7 +27,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.jdbcAuthentication().dataSource(dataSource)
                 .withDefaultSchema()
                 .usersByUsernameQuery("select username, password, true as activated from user where username = ?")
-                .authoritiesByUsernameQuery("select username, authority from authorities where username = ?")
                 .rolePrefix("")
                 .and();
 
