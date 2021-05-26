@@ -23,25 +23,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser("admin")
-                .password(passwordEncoder().encode("verysecureadminpassword"))
-                .roles("ADMIN")
-                .and()
-                .withUser("testuser")
-                .password(passwordEncoder().encode("verysecureuserpassword"))
-                .roles("USER")
-                .and();
 
         auth.jdbcAuthentication().dataSource(dataSource)
                 .withDefaultSchema()
-                .withUser("db_admin")
-                .password(passwordEncoder().encode("verysecureadminpassword"))
-                .roles("ADMIN")
-                .and()
-                .withUser("db_testuser")
-                .password(passwordEncoder().encode("verysecureuserpassword"))
-                .roles("USER")
+                .usersByUsernameQuery("select username, password, true as activated from user where username = ?")
+                .rolePrefix("")
                 .and();
 
         auth.userDetailsService(userDetailsService)
@@ -53,13 +39,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
             .authorizeRequests()
             .antMatchers("/currentuser").permitAll()
-            .antMatchers("/order*").permitAll()
+            .antMatchers("/order/*").permitAll()
+            .antMatchers("/orders").hasAnyAuthority("ADMIN", "USER")
+            .antMatchers("/order").permitAll()
             .antMatchers("/register").permitAll()
-            .antMatchers("/admin/**").hasRole("ADMIN")
+            .antMatchers("/admin/**").hasAuthority("ADMIN")
             .antMatchers("/login*").permitAll()
+
             .antMatchers("/item*").permitAll()
+            .antMatchers("/items").permitAll()
+            .antMatchers("/item/*").permitAll()
+
             .antMatchers("/item/*/photo").permitAll()
             .antMatchers("/photo/*").permitAll()
+            .antMatchers("/user/exists").permitAll()
+                .antMatchers("/currentUserRole").permitAll()
             .anyRequest().authenticated()
             .and()
             .httpBasic().and();

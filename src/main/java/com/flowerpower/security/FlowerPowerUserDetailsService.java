@@ -21,10 +21,10 @@ public class FlowerPowerUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findByUsername(userName);
+        User user = userRepository.findByUsername(userName);
 
-        if (user.isPresent()) {
-            return user.get();
+        if (user != null) {
+            return user;
         }
 
         throw new UsernameNotFoundException("User with name " + userName + " not found");

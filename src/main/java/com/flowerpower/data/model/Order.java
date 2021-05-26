@@ -1,5 +1,6 @@
 package com.flowerpower.data.model;
 
+import com.flowerpower.security.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
@@ -32,6 +34,8 @@ public class Order implements Serializable {
 
     @OneToOne(targetEntity = Basket.class, cascade = CascadeType.ALL)
     private Basket basket;
+
+    private Long userId;
 
     private OrderStatus status;
     private String paymentMethod;

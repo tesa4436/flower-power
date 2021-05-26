@@ -35,10 +35,11 @@ public class User implements UserDetails {
     private String fullName;
     private String address;
     private String phoneNumber;
+    private String role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Arrays.asList(new SimpleGrantedAuthority("USER"));
+        return Arrays.asList(new SimpleGrantedAuthority(getRole()));
     }
 
     @Override

@@ -36,3 +36,19 @@ values (1, 1),
 
 insert into flower_order (order_id, shipping_address, status, basket_basket_id, version)
 values (1, 'Z. Sierakausko g. 5-45, Vilnius', 0, 1, 1);
+
+--DROP TABLE IF EXISTS authority;
+
+--create table authority (
+--    username varchar(50) not null,
+--    authority varchar(50) not null,
+--    foreign key (username) references user (username)
+--);
+
+insert into user (username, role)
+values  ('testuser', 'USER'), -- verysecureuserpassword
+        ('admin', 'ADMIN'); --verysecureadminpassword
+
+--insert into authority (username, authority)
+--values  ('testuser', 'USER'),
+ --       ('admin', 'ADMIN');

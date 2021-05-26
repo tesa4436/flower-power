@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.PostConstruct;
 import java.security.Principal;
 
 @RestController
@@ -31,17 +32,50 @@ public class UsersController {
         this.encoder = encoder;
     }
 
+    @PostConstruct
+    public void initUserPasswords() {
+        var testuser = userRepository.findByUsername("testuser");
+        var admin = userRepository.findByUsername("admin");
+
+        if (testuser != null) {
+            testuser.setPassword(encoder.encode("verysecureuserpassword"));
+        }
+
+        if (admin != null) {
+            admin.setPassword(encoder.encode("verysecureadminpassword"));
+        }
+
+        userRepository.save(testuser);
+        userRepository.save(admin);
+    }
+
     @RequestMapping(value = "/currentuser", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public String currentUser(Principal principal) {
         return principal != null && principal.getName() != null ? principal.getName() : "anonymous";
     }
 
-    @RequestMapping(value = "/user/{name}/exists", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean userExists(@PathVariable String name) {
-        return userRepository.findByUsername(name).isPresent();
+    @RequestMapping(value = "/currentUserRole", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String currentUserRole(Principal principal) {
+        var currentUser = principal != null ? userRepository.findByUsername(principal.getName()) : null;
+
+
+        if(principal==null){
+            return "anonymous";
+        }
+
+        if (currentUser.getRole().equals("ADMIN")) {
+            return "admin";
+        }
+
+            return "user";
     }
 
-    @RequestMapping(value = "/user/exists", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/user/{name}/exists", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean userExists(@PathVariable String name) {
+        return userRepository.findByUsername(name) != null;
+    }
+
+    @RequestMapping(value = "/user/exists", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Boolean> userWithPassExists(@RequestBody User user) {
 
         if (user == null || user.getUsername() == null || user.getPassword() == null) {
@@ -50,15 +84,15 @@ public class UsersController {
 
         var existingUser = userRepository.findByUsername(user.getUsername());
 
-        return existingUser.isPresent() ?
-                new ResponseEntity<>(existingUser.get().getPassword().equals(encoder.encode(user.getPassword())), HttpStatus.OK) :
+        return existingUser  != null?
+                new ResponseEntity<>((encoder.matches(user.getPassword(), existingUser.getPassword())), HttpStatus.OK) :
                 new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> registerNewUser(@RequestBody RegistrationForm form) {
 
-        if (form.getUsername() == null || userRepository.findByUsername(form.getUsername()).isPresent()) {
+        if (form.getUsername() == null || userRepository.findByUsername(form.getUsername()) != null) {
             return new ResponseEntity(HttpStatus.FORBIDDEN);
         }
 
