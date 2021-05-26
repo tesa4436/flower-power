@@ -41,8 +41,19 @@ public class ItemsController {
 
         Iterable<Item> allItems = itemRepository.findAll();
 
-        if (auth != null && !auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
-            allItems.forEach(item -> item.setAmount(null));
+        if (auth != null && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
+
+        }
+        else{
+            for (Item var : allItems)
+            {
+                if(var.getAmount()>0){
+                    var.setAmount(-1l);
+                }
+                else{
+                    var.setAmount(-2l);
+                }
+            }
         }
 
         return allItems;
