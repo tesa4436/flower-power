@@ -17,6 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -67,15 +74,28 @@ public class ItemsController {
         return new ResponseEntity<>(item, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/photo/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/photo/{id}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> getItemPhoto(@PathVariable("id") Long id) {
 
         Optional<ItemPhoto> photo = photoRepository.findById(id);
 
         if (photo.isPresent()) {
-            return new ResponseEntity<>(photo.get().getPhoto(), HttpStatus.OK);
-        }
+            ByteArrayInputStream inp = new ByteArrayInputStream(photo.get().getPhoto());
+            try {
+                BufferedImage image = ImageIO.read(inp);
+                BufferedImage resizedImage = new BufferedImage(700, 700, BufferedImage.TYPE_INT_RGB);
+                Graphics2D graphics2D = resizedImage.createGraphics();
+                graphics2D.drawImage(image, 0, 0, 700, 700, null);
+                graphics2D.dispose();
 
+                ByteArrayOutputStream outp = new ByteArrayOutputStream();
+                ImageIO.write(resizedImage, "jpg", outp);
+                return new ResponseEntity<>(outp.toByteArray(), HttpStatus.OK);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
