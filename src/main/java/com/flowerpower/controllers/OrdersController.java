@@ -39,6 +39,9 @@ public class OrdersController {
 
     @RequestMapping(value = "/orders", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public Iterable<Order> getOrders(Principal principal) {
+        if(principal==null){
+            return null;
+        }
         var curentUser = userRepository.findByUsername(principal.getName());
 
         if (curentUser != null && curentUser.getRole().equals("ADMIN")) {
