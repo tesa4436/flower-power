@@ -42,7 +42,7 @@ public class ItemsController {
         Iterable<Item> allItems = itemRepository.findAll();
         var currentUser = principal != null ? userRepository.findByUsername(principal.getName()) : null;
 
-        if (currentUser != null && !currentUser.getRole().equals("ADMIN")) {
+        if (currentUser == null || !currentUser.getRole().equals("ADMIN")) {
 
             allItems.forEach(it -> {
                 if (it.getAmount() > 0) {
