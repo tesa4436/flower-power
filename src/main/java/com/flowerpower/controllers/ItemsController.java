@@ -69,8 +69,12 @@ public class ItemsController {
 
         var currentUser = principal != null ? userRepository.findByUsername(principal.getName()) : null;
 
-        if (currentUser != null && !currentUser.getRole().equals("ADMIN")) {
-            item.setAmount(null);
+        if (currentUser == null || !currentUser.getRole().equals("ADMIN")) {
+            if (item.getAmount() > 0) {
+                item.setAmount(-1L);
+            } else {
+                item.setAmount(-2L);
+            }
         }
 
         return new ResponseEntity<>(item, HttpStatus.OK);

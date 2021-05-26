@@ -35,7 +35,7 @@ public class BasketsController {
 
         var curentUser = userRepository.findByUsername(principal.getName());
 
-        if (curentUser != null && !curentUser.getRole().equals("ADMIN")) {
+        if (curentUser == null || !curentUser.getRole().equals("ADMIN")) {
             allBaskets.forEach(bsk -> bsk.getItems().forEach(it -> it.setAmount(null)));
         }
 
@@ -55,7 +55,7 @@ public class BasketsController {
 
         var curentUser = userRepository.findByUsername(principal.getName());
 
-        if (curentUser != null && !curentUser.getRole().equals("ADMIN")) {
+        if (curentUser == null || !curentUser.getRole().equals("ADMIN")) {
             basket.getItems().forEach(it -> it.setAmount(null));
         }
 
