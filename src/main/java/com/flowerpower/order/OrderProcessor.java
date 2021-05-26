@@ -25,7 +25,7 @@ public class OrderProcessor {
         this.userRepository = userRepository;
     }
 
-    public void place(Order order, Principal principal) throws OutOfStockException {
+    public void place(Order order, Principal principal)  {
 
         validateAndProcess(order);
 
