@@ -56,7 +56,7 @@ public class OrderProcessor {
         orderRepository.save(oldOrder);
     }
 
-    private void validateAndProcess(Order order) throws OutOfStockException {
+    private void validateAndProcess(Order order)  {
         if (order == null) {
             throw new IllegalArgumentException("No order present");
         }
@@ -76,9 +76,6 @@ public class OrderProcessor {
                 throw new IllegalArgumentException("Item with id " + it.getId() + " does not exist");
             }
 
-            if (dbItem.get().getAmount() <= 0) {
-                throw new OutOfStockException("The item with id " + it.getId() + " is out of stock");
-            }
 
             Long newAmount = dbItem.get().getAmount() - 1 <= 0 ? 0 : dbItem.get().getAmount() - 1;
             dbItem.get().setAmount(newAmount);

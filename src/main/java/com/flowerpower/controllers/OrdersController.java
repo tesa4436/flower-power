@@ -1,6 +1,7 @@
 package com.flowerpower.controllers;
 
 import com.flowerpower.data.model.Order;
+import com.flowerpower.data.model.OrderStatus;
 import com.flowerpower.data.repository.OrderRepository;
 import com.flowerpower.data.repository.UserRepository;
 import com.flowerpower.order.OrderProcessor;
@@ -66,11 +67,11 @@ public class OrdersController {
     @RequestMapping(value = "/order", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> placeOrder(@RequestBody Order order, Principal principal) {
         try {
+            order.setStatus(OrderStatus.IN_PROGRESS);
             orderProcessor.place(order, principal);
             return new ResponseEntity<>(null, HttpStatus.CREATED);
 
-        } catch (OutOfStockException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+     
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (OptimisticLockException e) {
