@@ -70,8 +70,6 @@ public class OrdersController {
             order.setStatus(OrderStatus.IN_PROGRESS);
             orderProcessor.place(order, principal);
             return new ResponseEntity<>(null, HttpStatus.CREATED);
-
-     
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (OptimisticLockException e) {
