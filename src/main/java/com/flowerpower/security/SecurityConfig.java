@@ -26,8 +26,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         auth.jdbcAuthentication().dataSource(dataSource)
                 .withDefaultSchema()
-                .usersByUsernameQuery("select * from user where username = ?")
-                .authoritiesByUsernameQuery("select username, authority from authorities where username = ?")
+                .usersByUsernameQuery("select username, password, true as activated from user where username = ?")
+                .rolePrefix("")
                 .and();
 
         auth.userDetailsService(userDetailsService)
@@ -39,9 +39,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
             .authorizeRequests()
             .antMatchers("/currentuser").permitAll()
-            .antMatchers("/order*").permitAll()
+            .antMatchers("/order/*").permitAll()
+            .antMatchers("/orders").hasAnyAuthority("ADMIN", "USER")
+            .antMatchers("/order").permitAll()
             .antMatchers("/register").permitAll()
-            .antMatchers("/admin/**").hasRole("ADMIN")
+            .antMatchers("/admin/**").hasAuthority("ADMIN")
             .antMatchers("/login*").permitAll()
             .antMatchers("/items").permitAll()
             .antMatchers("/item/*").permitAll()

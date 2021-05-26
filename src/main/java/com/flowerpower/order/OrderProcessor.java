@@ -4,9 +4,11 @@ import com.flowerpower.data.model.Item;
 import com.flowerpower.data.model.Order;
 import com.flowerpower.data.repository.ItemRepository;
 import com.flowerpower.data.repository.OrderRepository;
+import com.flowerpower.data.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.security.Principal;
 import java.util.Optional;
 
 @Component
@@ -14,21 +16,30 @@ public class OrderProcessor {
 
     private ItemRepository itemRepository;
     private OrderRepository orderRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    public OrderProcessor(ItemRepository itemRepository, OrderRepository orderRepository) {
+    public OrderProcessor(ItemRepository itemRepository, OrderRepository orderRepository, UserRepository userRepository) {
         this.itemRepository = itemRepository;
         this.orderRepository = orderRepository;
+        this.userRepository = userRepository;
     }
 
-    public void place(Order order) throws OutOfStockException {
-        validate(order);
+    public void place(Order order, Principal principal) throws OutOfStockException {
+
+        validateAndProcess(order);
+
+        if (principal != null) {
+            var orderingUser = userRepository.findByUsername(principal.getName());
+            order.setUserId(orderingUser.getId());
+        }
+
         orderRepository.save(order);
     }
 
     public void update(Order order) throws OutOfStockException {
 
-        validate(order);
+        validateAndProcess(order);
 
         Optional<Order> oldOrderOptional = orderRepository.findById(order.getOrderId());
         Order oldOrder;
@@ -45,7 +56,7 @@ public class OrderProcessor {
         orderRepository.save(oldOrder);
     }
 
-    private void validate(Order order) throws OutOfStockException {
+    private void validateAndProcess(Order order) throws OutOfStockException {
         if (order == null) {
             throw new IllegalArgumentException("No order present");
         }
@@ -68,6 +79,9 @@ public class OrderProcessor {
             if (dbItem.get().getAmount() <= 0) {
                 throw new OutOfStockException("The item with id " + it.getId() + " is out of stock");
             }
+
+            Long newAmount = dbItem.get().getAmount() - 1 <= 0 ? 0 : dbItem.get().getAmount() - 1;
+            dbItem.get().setAmount(newAmount);
         }
     }
 }

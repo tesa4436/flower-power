@@ -20,6 +20,7 @@ public class RegistrationForm {
                 .fullName(fullName)
                 .address(address)
                 .phoneNumber(phoneNumber)
+                .role("USER")
                 .build();
     }
 }
