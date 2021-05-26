@@ -4,12 +4,11 @@ import com.flowerpower.data.model.Item;
 import com.flowerpower.data.model.ItemPhoto;
 import com.flowerpower.data.repository.ItemRepository;
 import com.flowerpower.data.repository.PhotoRepository;
+import com.flowerpower.data.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -27,21 +27,22 @@ public class ItemsController {
 
     private ItemRepository itemRepository;
     private PhotoRepository photoRepository;
-    private Authentication auth;
+    private UserRepository userRepository;
 
     @Autowired
-    public ItemsController(ItemRepository itemRepository, PhotoRepository photoRepository) {
+    public ItemsController(ItemRepository itemRepository, PhotoRepository photoRepository, UserRepository userRepository) {
         this.itemRepository = itemRepository;
         this.photoRepository = photoRepository;
-        this.auth = SecurityContextHolder.getContext().getAuthentication();
+        this.userRepository = userRepository;
     }
 
     @RequestMapping(value = "/items", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Iterable<Item> getItems() {
+    public Iterable<Item> getItems(Principal principal) {
 
         Iterable<Item> allItems = itemRepository.findAll();
+        var currentUser = principal != null ? userRepository.findByUsername(principal.getName()) : null;
 
-        if (auth != null && !auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
+        if (currentUser != null && !currentUser.getRole().equals("ADMIN")) {
             allItems.forEach(item -> item.setAmount(null));
         }
 
@@ -49,7 +50,7 @@ public class ItemsController {
     }
 
     @RequestMapping(value = "/item/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Item> getItemById(@PathVariable("id") Long id) {
+    public ResponseEntity<Item> getItemById(@PathVariable("id") Long id, Principal principal) {
 
         Optional<Item> itemOpt = itemRepository.findById(id);
 
@@ -58,9 +59,10 @@ public class ItemsController {
         }
 
         Item item = itemOpt.get();
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth != null && !auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
+        var currentUser = principal != null ? userRepository.findByUsername(principal.getName()) : null;
+
+        if (currentUser != null && !currentUser.getRole().equals("ADMIN")) {
             item.setAmount(null);
         }
 
