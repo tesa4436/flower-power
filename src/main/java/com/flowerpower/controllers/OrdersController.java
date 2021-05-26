@@ -71,8 +71,7 @@ public class OrdersController {
             orderProcessor.place(order, principal);
             return new ResponseEntity<>(null, HttpStatus.CREATED);
 
-        } catch (OutOfStockException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+     
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (OptimisticLockException e) {
