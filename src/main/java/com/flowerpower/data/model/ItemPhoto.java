@@ -5,12 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Version;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "item_photo")
@@ -24,7 +19,8 @@ public class ItemPhoto {
     private Long id;
 
     @Version
-    private long version;
+    private Long version;
 
+    @Lob
     private byte[] photo;
 }
