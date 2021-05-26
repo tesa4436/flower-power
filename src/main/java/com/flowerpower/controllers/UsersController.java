@@ -54,6 +54,22 @@ public class UsersController {
         return principal != null && principal.getName() != null ? principal.getName() : "anonymous";
     }
 
+    @RequestMapping(value = "/currentUserRole", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String currentUserRole(Principal principal) {
+        var currentUser = principal != null ? userRepository.findByUsername(principal.getName()) : null;
+
+
+        if(principal==null){
+            return "anonymous";
+        }
+
+        if (currentUser.getRole().equals("ADMIN")) {
+            return "admin";
+        }
+
+            return "user";
+    }
+
     @RequestMapping(value = "/user/{name}/exists", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean userExists(@PathVariable String name) {
         return userRepository.findByUsername(name) != null;

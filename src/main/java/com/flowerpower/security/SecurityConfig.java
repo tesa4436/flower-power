@@ -50,6 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/item/*/photo").permitAll()
             .antMatchers("/photo/*").permitAll()
             .antMatchers("/user/exists").permitAll()
+                .antMatchers("/currentUserRole").permitAll()
             .anyRequest().authenticated()
             .and()
             .httpBasic().and();
