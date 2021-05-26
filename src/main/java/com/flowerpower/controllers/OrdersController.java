@@ -28,7 +28,6 @@ public class OrdersController {
 
     private OrderRepository orderRepository;
     private OrderProcessor orderProcessor;
-    private Authentication auth;
     private UserRepository userRepository;
 
     @Autowired
@@ -36,7 +35,6 @@ public class OrdersController {
         this.orderRepository = orderRepository;
         this.orderProcessor = orderProcessor;
         this.userRepository = userRepository;
-        this.auth = SecurityContextHolder.getContext().getAuthentication();
     }
 
     @RequestMapping(value = "/orders", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
