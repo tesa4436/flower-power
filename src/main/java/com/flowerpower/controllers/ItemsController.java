@@ -43,7 +43,14 @@ public class ItemsController {
         var currentUser = principal != null ? userRepository.findByUsername(principal.getName()) : null;
 
         if (currentUser != null && !currentUser.getRole().equals("ADMIN")) {
-            allItems.forEach(item -> item.setAmount(null));
+
+            allItems.forEach(it -> {
+                if (it.getAmount() > 0) {
+                    it.setAmount(-1L);
+                } else {
+                    it.setAmount(-2L);
+                }
+            });
         }
 
         return allItems;
